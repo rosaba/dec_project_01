@@ -3,6 +3,10 @@ import requests
 import yaml
 import os
 from dotenv import load_dotenv
+from datetime import datetime
+from loguru import logger
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def request_config(url,param):
     load_dotenv()
@@ -22,13 +26,15 @@ def get_data(url:str, subset, date, limit:int, offset:int):
 
     if response.status_code == 200:
         df = pd.json_normalize(response.json())
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-        file_path = f'./raw_data/{subset}/{date}_{subset}.csv'
+        file_path = os.path.join(BASE_DIR, 'raw_data', subset, f"{date}_{subset}_{timestamp}.csv")
+
         df.to_csv(file_path, index=False)
+        logger.info(f"Saving {len(df)} rows to {file_path}")
 
-        print(f"Saved {len(df)} rows to {file_path}")
     else:
-        print(f"Error - {response.status_code}, please check configuration!")
+        logger.error(f"Error - {response.status_code}, please check configuration!")
 
 def get_date(url,query):
     base_url, earlist_params, headers = request_config(url,query)
@@ -39,8 +45,10 @@ def get_date(url,query):
 
 #latest_date_query = 'SELECT * ORDER BY crash_date DESC LIMIT 1 '
 def main():
+    #BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    yaml_path = os.path.join(BASE_DIR, 'mvc.yaml')
 
-    with open('./mvc.yaml', 'r') as f:
+    with open(yaml_path, 'r') as f:
         mvc_data = yaml.load(f, Loader=yaml.FullLoader)
 
     for key in mvc_data.keys():
