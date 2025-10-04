@@ -4,36 +4,42 @@ import yaml
 import os
 from dotenv import load_dotenv
 
-yaml_file = 'mvc.yaml'
+def get_data_response(url:str, subset, limit:int, offset:int):
+    load_dotenv()
 
-with open(yaml_file, 'r') as f:
-    mvc_data = yaml.load(f, Loader=yaml.FullLoader)
-
-def get_data(base_url, row_size=1000, datapage=1):
-
-    url = base_url
+    base_url = url
 
     headers = {
-        'X-App-Token': os.environ.get("X-APP-TOKEN")
+        'X-App-Token': os.environ.get("X-APP-TOKEN"),
+
     }
 
-    payload = {
-        'query': 'SELECT * ORDER BY crash_date ASC',
-        'page': {
-            'pageNumber': datapage,
-            'pageSize': row_size
+    params = {
+            '$query': f'SELECT * ORDER BY crash_date ASC LIMIT {limit} OFFSET {offset}',
         }
-    }
-
-    response = requests.post(url, json=payload, headers=headers)
+    
+    response = requests.get(base_url, params=params, headers=headers)
 
     if response.status_code == 200:
-        crashes_df = pd.json_normalize(requests.json())
+        df = pd.json_normalize(response.json())
 
-    file_path =f'./raw_data/crashes/pg_{datapage}_crashes.csv'
+        file_path = f'./raw_data/{subset}/{subset}.csv'
+        df.to_csv(file_path, index=False)
 
-    if not os.path.exists(file_path):
-        crashes_df.to_csv(file_path, index=False, mode='a', header=True)
+        print(f"✓ Saved {len(df)} rows to {file_path}")
     else:
-        crashes_df.to_csv(file_path, index=False, mode='a', header=False)
-    
+        print(f"Error - {response.status_code}, please check configuration!")
+
+
+
+def main():
+
+    with open('./mvc.yaml', 'r') as f:
+        mvc_data = yaml.load(f, Loader=yaml.FullLoader)
+
+    for key in mvc_data.keys():
+        get_data_response(mvc_data[key], key, 1000,0)
+
+
+if __name__ == '__main__':
+    main()
