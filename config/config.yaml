@@ -1,0 +1,16 @@
+base_url:
+  crashes: "https://data.cityofnewyork.us/api/v3/views/h9gi-nx95/query.json"
+  vehicles: "https://data.cityofnewyork.us/api/v3/views/bm4k-52h4/query.json"
+  person: "https://data.cityofnewyork.us/api/v3/views/f55k-p6yu/query.json"
+
+
+first_time_load:
+  query: "SELECT * WHERE date_extract_y(crash_date) > 2023"
+
+max_date_data:
+  query: "SELECT max(crash_date)"
+
+params_query: 
+    "$select": "*"
+    "$where":  "crash_date = '{max_date}'"
+

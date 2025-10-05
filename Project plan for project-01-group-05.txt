@@ -1,0 +1,64 @@
+# Project plan for project-01-group-05
+
+## Objective
+
+A short statement about the objective of your project.
+
+    The objective is to uncover patterns and risk factors in NYC motor vehicle collisions with data driven insights. 
+
+## Consumers
+
+What users would find your data useful? How do they want to access the data?
+
+    Emergency services, City Council & road engineers and tourists may find the data useful. ES may find the data useful to evaluate traffic safety intiatives. City Council & road engineers may find the data useful to design safer streets and intersections. Tourists may find it useful to know when to travel to NYC. 
+
+## Questions
+
+What questions are you trying to answer with your data? How will your data support your users?
+
+    What are the most common contributing factors to collisions in NYC?
+    Which borough has the highest number of collisions?
+    What time of day do most collisions occur?
+    How do collision rates vary by day of the week?
+    What are the most dangerous intersections in NYC?
+    Are collisions increasing or decreasing in specific boroughs? 
+    What types of vehicles are most often involved in collisions? 
+    Fatality rates by vehicle type and cause?
+
+## Source datasets
+
+What datasets are you sourcing from? How frequently are the source datasets updating?
+    Source Name: NYC collision data set 
+    
+    Source: https://data.cityofnewyork.us/resource/h9gi-nx95.json
+
+## Solution architecture
+
+How are we going to get data flowing from source to serving? What components and services will we combine to implement the solution? How do we automate the entire running of the solution?
+
+- What data extraction patterns are you going to be using? 
+    Incremental 
+- What data loading patterns are you going to be using?
+    Upsert 
+- What data transformation patterns are you going to be performing?
+    Renaming, Data type casting, Group by, Aggregation, Joins, Filter, Window Functions 
+
+Architecture Diagram - TBD 
+
+## Breakdown of tasks
+
+How is your project broken down? Who is doing what?
+    Task ETL 
+        Step 1 -> Rosana & Sakkara - pair program on the Extract and Load pipeline
+        Step 2 -> Sahib & Prateek - pair program on the Transform pipeline
+    Task AWS & Docker File & Image
+        Step 1 -> Rosana & Prateek - pair program on stitching the ELT pipeline together, adding logging and creating the Dockerfile for the docker image 
+        Step 2 ->  Sahib & Sakkara - pair program on creating the required AWS services (e.g. RDS, ECR, S3, ECS)
+    Task Unit Testing, Docstring & Slides 
+        Everyone writes a unit test for their respective program
+        Documentation - everyone writes docstring for task/program assigned
+    Task Deploying AWS solution 
+        Team effort 
+
+
+
