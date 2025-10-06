@@ -18,10 +18,9 @@ def request_config(url,param):
 
     return base_url, params, headers
 
-def get_data(url:str, subset, date, limit:int, offset:int):
+def get_data(url:str, subset, date):
     
-    base_url, params, headers = request_config(url,f'SELECT * WHERE crash_date=\'{date}\' LIMIT {limit} OFFSET {offset}')
-    
+    base_url, params, headers = request_config(url,f'SELECT * WHERE crash_date=\'{date}\'')
     response = requests.get(base_url, params=params, headers=headers)
 
     if response.status_code == 200:
@@ -33,8 +32,11 @@ def get_data(url:str, subset, date, limit:int, offset:int):
         df.to_csv(file_path, index=False)
         logger.info(f"Saving {len(df)} rows to {file_path}")
 
+        return df
+
     else:
         logger.error(f"Error - {response.status_code}, please check configuration!")
+
 
 def get_date(url,query):
     base_url, params, headers = request_config(url,query)
@@ -44,16 +46,17 @@ def get_date(url,query):
     return pd.to_datetime(df['crash_date']).dt.date[0]
 
 
-def main():
-    #BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    yaml_path = os.path.join(BASE_DIR, 'mvc.yaml')
+# def main(): 
+#     #BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+#     yaml_path = os.path.join(BASE_DIR, 'mvc.yaml')
 
-    with open(yaml_path, 'r') as f:
-        mvc_data = yaml.load(f, Loader=yaml.FullLoader)
+#     with open(yaml_path, 'r') as f:
+#         mvc_data = yaml.load(f, Loader=yaml.FullLoader)
 
-    for key in mvc_data.keys():
-        date = get_date(mvc_data[key],'SELECT * ORDER BY crash_date DESC LIMIT 1')
-        get_data(mvc_data[key], key, date, 1000,0)
-    
-if __name__ == '__main__':
-    main()
+
+#     for key in mvc_data.keys():
+#         date = get_date(mvc_data[key],'SELECT * ORDER BY crash_date DESC LIMIT 1')
+#         df = get_data(mvc_data[key], key, date, 1000,0)
+
+# if __name__ == '__main__':
+#     main()
