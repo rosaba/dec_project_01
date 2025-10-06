@@ -43,9 +43,8 @@ def get_date(url,query):
     df = pd.json_normalize(response.json())
     return pd.to_datetime(df['crash_date']).dt.date[0]
 
-#latest_date_query = 'SELECT * ORDER BY crash_date DESC LIMIT 1 '
 def main():
-    #BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
     yaml_path = os.path.join(BASE_DIR, 'mvc.yaml')
 
     with open(yaml_path, 'r') as f:
