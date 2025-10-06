@@ -31,13 +31,13 @@ def get_data(url:str, subset, date, limit:int, offset:int):
         print(f"Error - {response.status_code}, please check configuration!")
 
 def get_date(url,query):
-    base_url, earlist_params, headers = request_config(url,query)
-    response = requests.get(base_url, params=earlist_params, headers=headers)
+    base_url, params, headers = request_config(url,query)
+    response = requests.get(base_url, params=params, headers=headers)
 
     df = pd.json_normalize(response.json())
     return pd.to_datetime(df['crash_date']).dt.date[0]
 
-#latest_date_query = 'SELECT * ORDER BY crash_date DESC LIMIT 1 '
+
 def main():
 
     with open('./mvc.yaml', 'r') as f:
