@@ -1,4 +1,4 @@
-mvc_persons:
+persons:
    - unique_id : Integer
    - collision_id : Integer
    - crash_date : Date

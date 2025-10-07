@@ -1,4 +1,4 @@
-mvc_crashes:
+crashes:
   - crash_date : Date
   - crash_time : String
   - borough : String

@@ -1,9 +1,10 @@
 from sqlalchemy.engine import Engine,URL
-from sqlalchemy import create_engine,text, Table, Column, MetaData, Integer, String, Float, Date, Time, Text, DateTime
+from sqlalchemy import create_engine, inspect, text, Table, Column, MetaData, Integer, String, Float, Date, Time, Text, DateTime
 from dotenv import load_dotenv
 import os
 import psycopg2
 import yaml
+import loguru
 
 def create_db_url(username, password, host, port, database) ->  URL:
 
@@ -40,7 +41,7 @@ def get_type(type_str):
 
     return type_mapping.get(type_str, String(150))
 
-def get_table_from_yaml(yaml_file,metadata):
+def get_table_from_yaml(yaml_file,metadata,primary_key_column=None):
 
     with open(yaml_file, 'r') as f:
         schema = yaml.safe_load(f)
@@ -51,15 +52,20 @@ def get_table_from_yaml(yaml_file,metadata):
     for dict_items in schema[table_name]:
         for column_name, column_type in dict_items.items():
             sql_type = get_type(column_type)
-            columns.append(Column(column_name, sql_type))
+            is_primary = (column_name == primary_key_column)
+
+            columns.append(Column(column_name, sql_type,primary_key = is_primary))
     
     return Table(table_name, metadata, *columns)
 
-def create_load_to_table(file_path,engine,df):
+def create_load_to_table(file_path,engine,df,primary_key):
     metadata = MetaData()
-    table = get_table_from_yaml(file_path,metadata)
+    table = get_table_from_yaml(file_path,metadata,primary_key)
     metadata.create_all(engine,checkfirst=True)
     df.to_sql(table.name, engine, if_exists='append', index=False)
+
+def upsert_data(api_df, dbi_df):
+
     
 if __name__ == '__main__':
 

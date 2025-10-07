@@ -19,13 +19,29 @@ with open(yaml_path, 'r') as f:
 
 if check_connection(source_url):
     engine = create_engine(source_url)
+    inspector = inspect(engine)
     for key in mvc_data.keys():
-        latest_date = get_date(mvc_data[key],'SELECT * ORDER BY crash_date DESC LIMIT 1')
-        earliest_date = latest_date - timedelta(days=3) #setting up 'border-date', test to see upload of 3 days
-        while latest_date>earliest_date:
-            df = get_data(mvc_data[key], key, latest_date)
-            create_load_to_table(f'./{key}_metadata.yaml',engine,df)
-            latest_date-=timedelta(days=1)
+        latest_api_date = get_date(mvc_data[key],'SELECT * ORDER BY crash_date DESC LIMIT 1')
+
+        if f'{key}' not in inspector.get_table_names():
+            latest_db_date = date(2025, 7, 31) # <- first time upload
+        else:
+            date_query = f'SELECT MAX(crash_date) from {key}'
+            with engine.connect() as connection:
+                latest_db_date = connection.execute(text(date_query)).scalar() # <- subsequent uploads
+
+            metadata = MetaData()
+            metadata.reflect(bind=engine, only=[f'{key}'])
+            current_date = latest_db_date
+        #upsert data for past 30 days -> add new data
+
+        looping_date = latest_api_date
+        while looping_date>latest_db_date:
+            df = get_data(mvc_data[key], key, latest_api_date)
+            create_load_to_table(f'./{key}_metadata.yaml',engine,df,'collision_id')
+            looping_date-=timedelta(days=1)
+        
+        
 else:
     print("Please check connection")
         
