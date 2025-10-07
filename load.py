@@ -73,25 +73,25 @@ def upsert_to_db(table_name,url,engine, latest_db_date):
     table = metadata.tables[table_name]
     conflict_columns = [col.name for col in table.primary_key.columns]
     current_date = latest_db_date
-    while current_date>=(current_date - timedelta(days=30)):
+    while current_date>=(latest_db_date - timedelta(days=3)):
         logger.info(f'Processing date: {current_date}')
         api_df = get_data(url,table_name,current_date)
         with engine.begin() as connection:
             for _, row in api_df.iterrows():
-                insert_stmt = insert(table).values(**row.to_dict())
+                row_dict = row.to_dict()
+
+                stmt = insert(table).values(row_dict)
                 
-                update_dict = {
-                    col: getattr(insert_stmt.excluded, col)
-                    for col in row.index
-                    if col not in conflict_columns
-                }
-                
-                upsert_stmt = insert_stmt.on_conflict_do_update(
+                stmt = stmt.on_conflict_do_update(
                     index_elements=conflict_columns,
-                    set_=update_dict
+                    set_={
+                        col: stmt.excluded[col] 
+                        for col in row_dict.keys() 
+                        if col not in conflict_columns
+                    }
                 )
                 
-                connection.execute(upsert_stmt)
+                connection.execute(stmt)
         current_date-=timedelta(days=1)
 
 

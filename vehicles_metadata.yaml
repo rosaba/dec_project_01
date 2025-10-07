@@ -9,7 +9,7 @@ vehicles:
   - vehicle_make : String
   - vehicle_year : String
   - travel_direction : String
-  - vehicle_occupants : Integer
+  - vehicle_occupants : String
   - driver_sex : String
   - driver_license_status : String
   - driver_license_jurisdiction : String
