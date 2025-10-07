@@ -1,10 +1,13 @@
-from sqlalchemy.engine import Engine,URL
-from sqlalchemy import create_engine, inspect, text, Table, Column, MetaData, Integer, String, Float, Date, Time, Text, DateTime
+from sqlalchemy.engine import URL
+from sqlalchemy import create_engine, inspect, text, Table, Column, MetaData, Integer, String, Float, Date, DateTime
+from sqlalchemy.dialects.postgresql import insert
 from dotenv import load_dotenv
 import os
 import psycopg2
 import yaml
-import loguru
+from loguru import logger
+from datetime import timedelta
+from extract import get_data
 
 def create_db_url(username, password, host, port, database) ->  URL:
 
@@ -34,18 +37,18 @@ def get_type(type_str):
     type_mapping = {
         'Date' : Date,
         'Datetime' : DateTime,
-        'String' : String(150),
+        'String' : String(250),
         'Float' : Float,
         'Integer' : Integer
     }
 
     return type_mapping.get(type_str, String(150))
 
-def get_table_from_yaml(yaml_file,metadata,primary_key_column=None):
+def get_table_from_yaml(yaml_file,metadata):
 
     with open(yaml_file, 'r') as f:
         schema = yaml.safe_load(f)
-    
+    primary_key_column = schema['primary_key']
     columns = []
 
     table_name = list(schema.keys())[0]
@@ -58,13 +61,39 @@ def get_table_from_yaml(yaml_file,metadata,primary_key_column=None):
     
     return Table(table_name, metadata, *columns)
 
-def create_load_to_table(file_path,engine,df,primary_key):
+def create_load_to_table(file_path,engine,df):
     metadata = MetaData()
-    table = get_table_from_yaml(file_path,metadata,primary_key)
+    table = get_table_from_yaml(file_path,metadata)
     metadata.create_all(engine,checkfirst=True)
     df.to_sql(table.name, engine, if_exists='append', index=False)
 
-def upsert_data(api_df, dbi_df):
+def upsert_to_db(table_name,url,engine, latest_db_date):
+    metadata = MetaData()
+    metadata.reflect(bind=engine, only=[table_name])
+    table = metadata.tables[table_name]
+    conflict_columns = [col.name for col in table.primary_key.columns]
+    current_date = latest_db_date
+    while current_date>=(current_date - timedelta(days=30)):
+        logger.info(f'Processing date: {current_date}')
+        api_df = get_data(url,table_name,current_date)
+        with engine.begin() as connection:
+            for _, row in api_df.iterrows():
+                insert_stmt = insert(table).values(**row.to_dict())
+                
+                update_dict = {
+                    col: getattr(insert_stmt.excluded, col)
+                    for col in row.index
+                    if col not in conflict_columns
+                }
+                
+                upsert_stmt = insert_stmt.on_conflict_do_update(
+                    index_elements=conflict_columns,
+                    set_=update_dict
+                )
+                
+                connection.execute(upsert_stmt)
+        current_date-=timedelta(days=1)
+
 
     
 if __name__ == '__main__':

@@ -24,19 +24,19 @@ def get_data(url:str, subset, date):
     response = requests.get(base_url, params=params, headers=headers)
 
     if response.status_code == 200:
+        logger.info(f"Extracting data for {subset}")
         df = pd.json_normalize(response.json())
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-
-        file_path = os.path.join(BASE_DIR, 'raw_data', subset, f"{date}_{subset}_{timestamp}.csv")
-
-        df.to_csv(file_path, index=False)
-        logger.info(f"Saving {len(df)} rows to {file_path}")
-
         return df
 
     else:
         logger.error(f"Error - {response.status_code}, please check configuration!")
 
+def save_to_csv(df, subset, date):
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    file_path = os.path.join(BASE_DIR, 'raw_data', subset, f"{date}_{subset}_{timestamp}.csv")
+
+    df.to_csv(file_path, index=False)
+    logger.info(f"Saving {len(df)} rows to {file_path}")
 
 def get_date(url,query):
     base_url, params, headers = request_config(url,query)

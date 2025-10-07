@@ -20,3 +20,5 @@ persons:
    - ped_action : String
    - contributing_factor_1 : String
    - contributing_factor_2 : String
+
+primary_key : unique_id 

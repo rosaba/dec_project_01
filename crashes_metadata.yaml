@@ -30,3 +30,5 @@ crashes:
   - contributing_factor_vehicle_5 : String
   - vehicle_type_code_4 : String
   - vehicle_type_code_5 : String
+
+primary_key : collision_id 
