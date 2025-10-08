@@ -7,7 +7,9 @@ import psycopg2
 import yaml
 from loguru import logger
 from datetime import timedelta
-from extract import get_data
+from extract import get_data, save_to_csv
+import numpy as np
+import pandas as pd
 
 def create_db_url(username, password, host, port, database) ->  URL:
 
@@ -67,48 +69,46 @@ def create_load_to_table(file_path,engine,df):
     metadata.create_all(engine,checkfirst=True)
     df.to_sql(table.name, engine, if_exists='append', index=False)
 
-def upsert_to_db(table_name,url,engine, latest_db_date):
-    metadata = MetaData()
-    metadata.reflect(bind=engine, only=[table_name])
-    table = metadata.tables[table_name]
-    conflict_columns = [col.name for col in table.primary_key.columns]
-    current_date = latest_db_date
-    while current_date>=(latest_db_date - timedelta(days=3)):
-        logger.info(f'Processing date: {current_date}')
-        api_df = get_data(url,table_name,current_date)
-        with engine.begin() as connection:
-            for _, row in api_df.iterrows():
-                row_dict = row.to_dict()
+def convert_nan_to_null(df):
 
-                stmt = insert(table).values(row_dict)
-                
-                stmt = stmt.on_conflict_do_update(
-                    index_elements=conflict_columns,
-                    set_={
-                        col: stmt.excluded[col] 
-                        for col in row_dict.keys() 
-                        if col not in conflict_columns
+    df = df.replace({
+        np.nan: None,
+        pd.NA: None,
+        pd.NaT: None
+    })
+    
+    df = df.where(pd.notna(df), None)
+    
+    df = df.replace({
+        'nan': None,
+        'NaN': None,
+        'NAN': None,
+        'None': None,
+        '': None
+    })
+    
+    return df
+
+def upsert_to_db(table_name,url,engine, current_date, table, conflict_columns):
+    logger.info(f'Processing date: {current_date}')
+    api_df = get_data(url,table_name,current_date)
+    api_df = convert_nan_to_null(api_df)
+    with engine.begin() as connection:
+        for _, row in api_df.iterrows():
+            row_dict = row.to_dict()
+
+            stmt = insert(table).values(row_dict)
+            
+            stmt = stmt.on_conflict_do_update(
+                index_elements=conflict_columns,
+                set_={
+                    col: stmt.excluded[col] 
+                    for col in row_dict.keys() 
+                    if col not in conflict_columns
                     }
                 )
                 
-                connection.execute(stmt)
-        current_date-=timedelta(days=1)
+        connection.execute(stmt)
 
 
-    
-if __name__ == '__main__':
-
-    load_dotenv()
-    username = os.environ.get('DESTINATION_DB_USERNAME')
-    password = os.environ.get('DESTINATION_DB_PASSWORD')
-    host = os.environ.get('DESTINATION_SERVER_NAME')
-    port = os.environ.get('DESTINATION_PORT')
-    database = os.environ.get('DESTINATION_DATABASE_NAME')
-
-    source_url = create_db_url(username, password, host, port, database)
-
-    if check_connection(source_url):
-        print('Connection Successful')
-    else:
-        print('Connection failed! Please check configuration!')
 

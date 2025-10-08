@@ -24,14 +24,21 @@ if check_connection(source_url):
         latest_api_date = get_date(mvc_data[key],'SELECT * ORDER BY crash_date DESC LIMIT 1')
 
         if f'{key}' not in inspector.get_table_names():
-            latest_db_date = date(2025, 7, 31) # <- first time upload, need to refactor to data from previous 90 days dynamically
+            latest_db_date = latest_api_date - timedelta(days=90) # <- first time upload, need to refactor to data from previous 90 days dynamically
         else:
             date_query = f'SELECT MAX(crash_date) from {key}'
             with engine.connect() as connection:
                 latest_db_date = connection.execute(text(date_query)).scalar() # <- subsequent uploads
-                upsert_to_db(key,mvc_data[key],engine,latest_db_date)
+                metadata = MetaData()
+                metadata.reflect(bind=engine, only=[key])
+                table = metadata.tables[key]
+                conflict_columns = [col.name for col in table.primary_key.columns]
+                current_date = latest_db_date
+                while current_date>(latest_db_date - timedelta(days=30)):
+                    upsert_to_db(key,mvc_data[key],engine,current_date,table,conflict_columns)
+                    current_date-=timedelta(days=1)
 
-        looping_date = latest_api_date
+        looping_date = latest_api_date # < - new data upload
         while looping_date>latest_db_date:
             df = get_data(mvc_data[key], key, looping_date)
             save_to_csv(df,key,looping_date)

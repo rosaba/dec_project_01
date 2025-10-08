@@ -18,6 +18,23 @@ def request_config(url,param):
 
     return base_url, params, headers
 
+def save_to_csv(df, subset, date):
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    directory_path = os.path.join(BASE_DIR,'raw_data', subset)
+    file_path = os.path.join(directory_path, f"{date}_{subset}_{timestamp}.csv")
+
+    for filename in os.listdir(directory_path):
+        if f'{date}' in filename:
+            old_file = os.path.join(directory_path, filename)
+            if os.path.exists(old_file):
+                os.remove(old_file)
+                break
+            else:
+                print(f'{old_file} not found during deletion attempt')
+
+    df.to_csv(file_path, index=False)
+    logger.info(f"Saving {len(df)} rows to {file_path}")
+
 def get_data(url:str, subset, date):
     
     base_url, params, headers = request_config(url,f'SELECT * WHERE crash_date=\'{date}\'')
@@ -26,17 +43,12 @@ def get_data(url:str, subset, date):
     if response.status_code == 200:
         logger.info(f"Extracting data for {subset}")
         df = pd.json_normalize(response.json())
+        save_to_csv(df,subset,date)
         return df
 
     else:
         logger.error(f"Error - {response.status_code}, please check configuration!")
 
-def save_to_csv(df, subset, date):
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    file_path = os.path.join(BASE_DIR, 'raw_data', subset, f"{date}_{subset}_{timestamp}.csv")
-
-    df.to_csv(file_path, index=False)
-    logger.info(f"Saving {len(df)} rows to {file_path}")
 
 def get_date(url,query):
     base_url, params, headers = request_config(url,query)
@@ -45,18 +57,3 @@ def get_date(url,query):
     df = pd.json_normalize(response.json())
     return pd.to_datetime(df['crash_date']).dt.date[0]
 
-
-# def main(): 
-#     #BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-#     yaml_path = os.path.join(BASE_DIR, 'mvc.yaml')
-
-#     with open(yaml_path, 'r') as f:
-#         mvc_data = yaml.load(f, Loader=yaml.FullLoader)
-
-
-#     for key in mvc_data.keys():
-#         date = get_date(mvc_data[key],'SELECT * ORDER BY crash_date DESC LIMIT 1')
-#         df = get_data(mvc_data[key], key, date, 1000,0)
-
-# if __name__ == '__main__':
-#     main()
