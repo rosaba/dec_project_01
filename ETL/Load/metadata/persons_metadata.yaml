@@ -1,0 +1,24 @@
+persons:
+   - unique_id : Integer
+   - collision_id : Integer
+   - crash_date : Date
+   - crash_time : String
+   - person_id : String
+   - person_type : String
+   - person_injury : String
+   - vehicle_id : String
+   - person_age : Integer
+   - ped_role : String
+   - person_sex : String
+   - ejection : String
+   - emotional_status : String
+   - bodily_injury : String
+   - position_in_vehicle : String
+   - safety_equipment : String
+   - complaint : String
+   - ped_location : String
+   - ped_action : String
+   - contributing_factor_1 : String
+   - contributing_factor_2 : String
+
+primary_key : unique_id 
