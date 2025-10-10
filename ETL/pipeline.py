@@ -2,10 +2,10 @@ import os
 from connectors.collisions_api import CollisionsApiClient
 import pandas as pd
 from dotenv import load_dotenv
-from Extract.extract import load_dataset_ids, get_since_iso, fetch_collisions_latest, save_to_csv
+from Extract.extract import load_dataset_ids, get_since_iso, fetch_collisions_latest, save_to_csv, deduplicate_df
 from loguru import logger
 from connectors.collisions_db import CollisionsDbClient
-from Load.load import create_load_to_table
+from Load.load import prep_and_load_table
 
 
 def main():
@@ -38,7 +38,10 @@ def main():
         if collected_data:
             file_path_csv = os.path.join(dir_path, f"{key}.csv")
             df = pd.json_normalize(collected_data)
-            save_to_csv(df=df, file_path_csv=file_path_csv, incremental=incremental)
+            file_path_metadata = os.path.join(BASE_DIR, 'Load/metadata', f"{key}_metadata.yaml")
+            save_to_csv(
+                df=df, file_path_csv=file_path_csv, incremental=incremental, metadata_yaml_file_path=file_path_metadata, key=key
+                )
         else:
             logger.info(f"No fresh data that could be collected for {key} dataset")
 
@@ -56,7 +59,7 @@ def main():
         file_path_metadata = os.path.join(BASE_DIR, 'Load/metadata', f"{key}_metadata.yaml")
         file_path_csv = os.path.join(BASE_DIR, 'raw_data', key, f"{key}.csv")
         df = pd.read_csv(file_path_csv)
-        create_load_to_table(metadata_yaml_file_path=file_path_metadata, client=collisions_db_client, df=df)
+        prep_and_load_table(metadata_yaml_file_path=file_path_metadata, client=collisions_db_client, df=df)
 
 
     # Transform

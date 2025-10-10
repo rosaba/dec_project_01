@@ -21,3 +21,4 @@ dependencies:
       - tzdata==2025.2
       - loguru==0.7.3
       - pg8000
+      - pytest

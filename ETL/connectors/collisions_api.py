@@ -2,12 +2,37 @@ import requests
 from loguru import logger
 
 class CollisionsApiClient:
-    def __init__(self, app_token: str):
+    """
+    Client for interacting with the NYC Open Data Collisions API.
+
+    Handles authentication via app token and provides methods to fetch vehicle collision data.
+    """
+
+    def __init__(self, app_token: str) -> None:
+        """
+        Initializes the API client with the required app token.
+
+        Args:
+            app_token (str): Socrata API token for authenticating requests.
+        """
         self.app_token = app_token
         self.base_url = "https://data.cityofnewyork.us/resource"
         
 
     def get_collisions_datasets(self, dataset_id: str, params: dict) -> dict:
+        """
+        Fetch collision dataset from the NYC Open Data API.
+
+        Args:
+            dataset_id (str): The identifier of the dataset to fetch.
+            params (dict): Query parameters for the API request.
+
+        Returns:
+            dict: Parsed JSON response from the API.
+
+        Raises:
+            Exception: If the request fails with a non-200 status code.
+        """
 
         response = requests.get(
             f"{self.base_url}/{dataset_id}", 
@@ -22,10 +47,25 @@ class CollisionsApiClient:
                 f"Failed to extract data from NYC Collisions API. Status Code: {response.status_code}. Response: {response.text}"
             )
         
-    def get_all_collisions_since(self, dataset_id: str, since_date: str, limit: int = 1000, max_rows: int = 100000):
+    def get_all_collisions_since(self, dataset_id: str, since_date: str, limit: int = 1000, max_rows: int = 100000) -> list:
         """
-        Pulls all records since a given crash_date, paginated.
+        Fetches all collision records since a specified crash date.
+
+        Retrieves data in paginated batches using the given `limit`, up to a maximum of `max_rows`.
+
+        Args:
+            dataset_id (str): The ID of the dataset to query.
+            since_date (str): The crash_date (in ISO format) to start fetching records from.
+            limit (int, optional): Number of records per page (default is 1000).
+            max_rows (int, optional): Maximum number of records to fetch in total (default is 100000).
+
+        Returns:
+            list: A list of dictionaries representing collision records.
+
+        Raises:
+            Exception: If the API call fails during any page request.
         """
+
         collected_data = []
 
         for offset in range(0, max_rows, limit):
