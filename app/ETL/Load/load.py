@@ -1,6 +1,6 @@
 from sqlalchemy import Table, Column, Integer, BigInteger, String, MetaData, Float, Date, DateTime, Time, UUID
 import pandas as pd
-from connectors.collisions_db import CollisionsDbClient
+from ETL.connectors.collisions_db import CollisionsDbClient
 import yaml
 from loguru import logger
 

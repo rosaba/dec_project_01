@@ -22,3 +22,4 @@ dependencies:
       - loguru==0.7.3
       - pg8000
       - pytest
+      - sqlalchemy

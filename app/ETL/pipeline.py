@@ -1,11 +1,11 @@
 import os
-from connectors.collisions_api import CollisionsApiClient
+from ETL.connectors.collisions_api import CollisionsApiClient
 import pandas as pd
 from dotenv import load_dotenv
-from Extract.extract import load_dataset_ids, get_since_iso, fetch_collisions_latest, save_to_csv, deduplicate_df
+from ETL.Extract.extract import load_dataset_ids, get_since_iso, fetch_collisions_latest, save_to_csv, deduplicate_df
 from loguru import logger
-from connectors.collisions_db import CollisionsDbClient
-from Load.load import prep_and_load_table
+from ETL.connectors.collisions_db import CollisionsDbClient
+from ETL.Load.load import prep_and_load_table
 
 
 def main():

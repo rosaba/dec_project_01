@@ -13,7 +13,18 @@ https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Person/f55k
 - create X-App-Token at https://data.cityofnewyork.us/profile/edit/developer_settings
 - Customize .env file from template.env
 
-# RUN
+# RUN LOCALLY
+- in .env set SERVER_NAME=localhost
 - run pipeline:
-```cd ETL```
-```python pipeline.py```
+```cd app```
+```python -m ETL.pipeline```
+
+- run unit tests from directory app:
+```PYTHONPATH=. pytest ETL_tests```
+
+RUN WITH DOCKER:
+- in .env set SERVER_NAME=collisions_postgres
+- ```docker compose down -v```
+- ```docker compose up --build```
+
+

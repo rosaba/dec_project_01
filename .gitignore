@@ -211,3 +211,6 @@ ETL/raw_data/persons/*
 ETL/raw_data/vehicles/*
 
 .vscode
+
+.DS_Store
+
