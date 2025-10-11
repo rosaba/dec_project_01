@@ -209,6 +209,9 @@ __marimo__/
 app/ETL/raw_data/crashes/*
 app/ETL/raw_data/persons/*
 app/ETL/raw_data/vehicles/*
+!app/ETL/raw_data/crashes/.gitkeep
+!app/ETL/raw_data/persons/.gitkeep
+!app/ETL/raw_data/vehicles/.gitkeep
 
 .vscode
 
