@@ -1,6 +1,7 @@
 import yaml
 import numpy as np
 import pandas as pd
+import psycopg2
 from sqlalchemy import create_engine, inspect, text, Table, Column, MetaData
 from sqlalchemy import Integer, String, Float, Date, DateTime
 from sqlalchemy.dialects.postgresql import insert

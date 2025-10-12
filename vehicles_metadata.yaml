@@ -1,0 +1,27 @@
+vehicles:
+  - unique_id : Integer 
+  - collision_id : Integer
+  - crash_date : Date
+  - crash_time : String
+  - vehicle_id : String
+  - state_registration : String
+  - vehicle_type : String
+  - vehicle_make : String
+  - vehicle_year : String
+  - travel_direction : String
+  - vehicle_occupants : Integer
+  - driver_sex : String
+  - driver_license_status : String
+  - driver_license_jurisdiction : String
+  - pre_crash : String
+  - point_of_impact : String
+  - vehicle_damage : String
+  - vehicle_damage_1 : String
+  - vehicle_damage_2 : String
+  - vehicle_damage_3 : String
+  - public_property_damage : String
+  - contributing_factor_1 : String
+  - contributing_factor_2 : String
+  - public_property_damage_type : String
+
+primary_key : unique_id 

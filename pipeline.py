@@ -2,9 +2,9 @@ import os
 import yaml
 from datetime import timedelta
 from loguru import logger
-from config import APIConfig, DatabaseConfig
-from extractor import APIExtractor
-from loader import DatabaseLoader
+from config.config import APIConfig, DatabaseConfig
+from extract.extractor import APIExtractor
+from load.loader import DatabaseLoader
 
 
 class ETLPipeline:

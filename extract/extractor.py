@@ -18,7 +18,7 @@ class APIExtractor:
         headers = self.config.get_headers()
         params = {'$query':query}
         
-        return self.config.base_url,headers,params
+        return self.config.base_url,params,headers
     
     def _get_raw_data_path(self,subset,date):
 
@@ -34,7 +34,7 @@ class APIExtractor:
 
         try: 
             for filename in os.listdir(directory_path):
-                if date in filename:
+                if str(date) in filename:
                     old_file = os.path.join(directory_path, filename)
                     if os.path.exists(old_file):
                         os.remove(old_file)
@@ -58,7 +58,8 @@ class APIExtractor:
     def extract_data(self,url,subset,date):
 
         self.config.base_url = url
-        query = f"SELECT * WHERE crash_date='{date}'"
+        offset = 0
+        query = f"SELECT * WHERE crash_date='{date}' LIMIT 1000 OFFSET {offset}"
         base_url, params, headers = self._build_request_params(query)
         
         try:
@@ -66,7 +67,17 @@ class APIExtractor:
             response.raise_for_status()
             
             logger.info(f"Extracting data for {subset} on {date}")
-            df = pd.json_normalize(response.json())
+            temp_df = pd.json_normalize(response.json())
+            df = temp_df.copy()
+
+            while len(temp_df)==1000:
+                offset+=1000
+                offset_query = f"SELECT * WHERE crash_date='{date}' LIMIT 1000 OFFSET {offset}"
+                base_url, params, headers = self._build_request_params(offset_query)
+                offset_response = requests.get(base_url, params=params, headers=headers)
+                temp_df = pd.json_normalize(offset_response.json())
+                df = pd.concat([df, temp_df], axis=0, ignore_index=True)
+            
             self.save_to_csv(df, subset, date)
             return df
             
