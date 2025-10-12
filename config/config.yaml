@@ -1,8 +1,13 @@
 base_url:
   crashes: "https://data.cityofnewyork.us/api/v3/views/h9gi-nx95/query.json"
-  vehicles: "https://data.cityofnewyork.us/api/v3/views/bm4k-52h4/query.json"
   person: "https://data.cityofnewyork.us/api/v3/views/f55k-p6yu/query.json"
+  vehicles: "https://data.cityofnewyork.us/api/v3/views/bm4k-52h4/query.json"
+  
 
+file_name:
+  crashes: "crashes.csv"
+  person: "person.csv"
+  vehicles: "vehcles.csv"
 
 first_time_load:
   query: "SELECT * WHERE date_extract_y(crash_date) > 2023"
@@ -10,7 +15,258 @@ first_time_load:
 max_date_data:
   query: "SELECT max(crash_date)"
 
-params_query: 
-    "$select": "*"
-    "$where":  "crash_date = '{max_date}'"
+incremental_query: 
+  query: 
+    Select: "*" 
+    Where: "crash_date = {max_date}"
 
+
+
+tables:
+  crashes:
+    columns:
+      - name: crash_date
+        type: Date
+      - name: crash_time
+        type: String
+        length: 10
+      - name: on_street_name
+        type: String
+        length: 255
+      - name: number_of_persons_injured
+        type: Integer
+      - name: number_of_persons_killed
+        type: Integer
+      - name: number_of_pedestrians_injured
+        type: Integer
+      - name: number_of_pedestrians_killed
+        type: Integer
+      - name: number_of_cyclist_injured
+        type: Integer
+      - name: number_of_cyclist_killed
+        type: Integer
+      - name: number_of_motorist_injured
+        type: Integer
+      - name: number_of_motorist_killed
+        type: Integer
+      - name: contributing_factor_vehicle_1
+        type: String
+        length: 255
+      - name: contributing_factor_vehicle_2
+        type: String
+        length: 255
+      - name: collision_id
+        type: Integer
+        primary_key: True
+      - name: vehicle_type_code1
+        type: String
+        length: 100
+      - name: vehicle_type_code2
+        type: String
+        length: 100
+      - name: id
+        type: String
+        length: 100
+      - name: version
+        type: String
+        length: 100
+      - name: created_at
+        type: DateTime
+      - name: updated_at
+        type: DateTime
+      - name: latitude
+        type: Float
+      - name: longitude
+        type: Float
+      - name: location_latitude
+        type: Float
+      - name: location_longitude
+        type: Float
+      - name: location_human_address
+        type: String
+        length: 500
+      - name: off_street_name
+        type: String
+        length: 255
+      - name: cross_street_name
+        type: String
+        length: 255
+      - name: borough
+        type: String
+        length: 100
+      - name: zip_code
+        type: String
+        length: 20
+      - name: contributing_factor_vehicle_3
+        type: String
+        length: 255
+      - name: vehicle_type_code_3
+        type: String
+        length: 100
+      - name: contributing_factor_vehicle_4
+        type: String
+        length: 255
+      - name: contributing_factor_vehicle_5
+        type: String
+        length: 255
+      - name: vehicle_type_code_4
+        type: String
+        length: 100
+      - name: vehicle_type_code_5
+        type: String
+        length: 100
+
+
+
+  person:
+    columns:
+      - name: unique_id
+        type: BigInteger
+        primary_key: True
+      - name: collision_id
+        type: BigInteger
+      - name: crash_date
+        type: Date
+      - name: crash_time
+        type: String
+        length: 10
+      - name: person_id
+        type: String
+        length: 100
+      - name: person_type
+        type: String
+        length: 50
+      - name: person_injury
+        type: String
+        length: 50
+      - name: vehicle_id
+        type: BigInteger
+      - name: person_age
+        type: Integer
+      - name: ejection
+        type: String
+        length: 50
+      - name: emotional_status
+        type: String
+        length: 100
+      - name: bodily_injury
+        type: String
+        length: 100
+      - name: position_in_vehicle
+        type: String
+        length: 100
+      - name: safety_equipment
+        type: String
+        length: 100
+      - name: complaint
+        type: String
+        length: 100
+      - name: ped_role
+        type: String
+        length: 100
+      - name: person_sex
+        type: String
+        length: 10
+      - name: id
+        type: String
+        length: 100
+      - name: version
+        type: String
+        length: 100
+      - name: created_at
+        type: DateTime
+      - name: updated_at
+        type: DateTime
+      - name: ped_location
+        type: String
+        length: 100
+      - name: ped_action
+        type: String
+        length: 100
+      - name: contributing_factor_1
+        type: String
+        length: 255
+      - name: contributing_factor_2
+        type: String
+        length: 255
+
+  vehicles:
+    columns:
+      - name: unique_id
+        type: Integer
+        primary_key: True
+      - name: collision_id
+        type: Integer
+      - name: crash_date
+        type: Date
+      - name: crash_time
+        type: String
+        length: 10
+      - name: vehicle_id
+        type: String
+        length: 100
+      - name: state_registration
+        type: String
+        length: 20
+      - name: vehicle_type
+        type: String
+        length: 100
+      - name: vehicle_make
+        type: String
+        length: 100
+      - name: vehicle_year
+        type: Integer
+      - name: travel_direction
+        type: String
+        length: 50
+      - name: vehicle_occupants
+        type: Integer
+      - name: driver_sex
+        type: String
+        length: 10
+      - name: driver_license_status
+        type: String
+        length: 50
+      - name: driver_license_jurisdiction
+        type: String
+        length: 20
+      - name: pre_crash
+        type: String
+        length: 100
+      - name: point_of_impact
+        type: String
+        length: 100
+      - name: vehicle_damage
+        type: String
+        length: 255
+      - name: vehicle_damage_1
+        type: String
+        length: 255
+      - name: vehicle_damage_2
+        type: String
+        length: 255
+      - name: public_property_damage
+        type: String
+        length: 255
+      - name: contributing_factor_1
+        type: String
+        length: 255
+      - name: contributing_factor_2
+        type: String
+        length: 255
+      - name: id
+        type: String
+        length: 100
+      - name: version
+        type: String
+        length: 100
+      - name: created_at
+        type: DateTime
+      - name: updated_at
+        type: DateTime
+      - name: vehicle_damage_3
+        type: String
+        length: 255
+      - name: public_property_damage_type
+        type: String
+        length: 255

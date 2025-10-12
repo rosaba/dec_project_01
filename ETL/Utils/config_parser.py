@@ -12,6 +12,14 @@ def extract_config():
 
 
 
+    
+    
 
-config = extract_config()
-print (config)
+
+    
+
+
+
+# print (config['base_url'])
+# for k, v in config['base_url'].items():
+#     print (k,v)

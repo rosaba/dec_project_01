@@ -5,103 +5,94 @@ from extractor.api_extractor import api_extractor
 from Utils import config_parser
 import pandas as pd
 from pathlib import Path
+import os
+from datetime import datetime
+from sqlalchemy.dialects.postgresql import insert
+from loader.DB_loader import db_loader
+from auth.DB_auth import DB_auth
+import re
+from sqlalchemy import MetaData, Table, Column, String, Integer, Date, DateTime, inspect, Float
+from Utils.logger import setup_logger
 
+logger = setup_logger()
 
 config_data =  config_parser.extract_config()
+Base_dir = Path(__file__).parent.parent
+
 
 class pipeline():
-    def __init__(self, config:dict):
+    def __init__(self,config):
         self.config = config
-        
-
-    def extract_data_crashes(self):   
-         # authenticate
-        extract_path = Path(__file__).parent.parent/'crashes.csv'
-        auth = api_Authentication()   
-        header =  auth.headers()
-        if not extract_path.exists():
-            extract_object  = api_extractor(header,self.config['base_url']['crashes'],  self.config['first_time_load'],  params = 'None')
-            first_load = extract_object.extract_first_time_load()
-            df_crashes = pd.json_normalize(first_load)
-            df_crashes.to_csv("crashes.csv")
-            return df_crashes
-            
-        else:
-               # max_date = df["crash_date"].max()
-            extract_object  = api_extractor(header, self.config['base_url']['crashes'],  self.config['max_date_data'],   params = 'None')
-            max_date_crash_json = extract_object.extract_first_time_load()
-            max_date_data = max_date_crash_json[0]['max_crash_date']
-            params_query = config_data["params_query"]
-            params_query["$where"] = params_query["$where"].format(max_date=max_date_data)
-            extract_object  = api_extractor(header, self.config['base_url']['crashes'], query = 'None' , params = params_query)
-            incremental_data = extract_object.extract_incremental_load()
-            incremental_data = pd.json_normalize(incremental_data)
-            incremental_data.to_csv("crashes.csv", mode= 'a')
-            df_crashes = pd.read_csv("crashes.csv")
-            updated_data_crashes = pd.concat([incremental_data, df_crashes], ignore_index= True)
-            return updated_data_crashes
-      
+    
 
 
-    def extract_data_vehicles(self):   
-         # authenticate
-        extract_path = Path(__file__).parent.parent/'vehicles.csv'
-        auth = api_Authentication()   
-        header =  auth.headers()
-        if not extract_path.exists():
-            extract_object  = api_extractor(header,self.config['base_url']['vehicles'],  self.config['first_time_load'],  params = 'None')
-            first_load = extract_object.extract_first_time_load()
-            df_vehicles = pd.json_normalize(first_load)
-            df_vehicles.to_csv("vehicles.csv")
-            return df_vehicles
-            
-        else:
-               # max_date = df["crash_date"].max()
-            extract_object  = api_extractor(header, self.config['base_url']['vehicles'],  self.config['max_date_data'],   params = 'None')
-            max_date_crash_json = extract_object.extract_first_time_load()
-            max_date_data = max_date_crash_json[0]['max_crash_date']
-            params_query = config_data["params_query"]
-            params_query["$where"] = params_query["$where"].format(max_date=max_date_data)
-            extract_object  = api_extractor(header, self.config['base_url']['vehicles'], query = 'None' , params = params_query)
-            incremental_data = extract_object.extract_incremental_load()
-            incremental_data = pd.json_normalize(incremental_data)
-            incremental_data.to_csv("vehicles.csv", mode= 'a')
-            updated_data_vehicles = pd.concat([incremental_data, df_vehicles], ignore_index= True)
-            return updated_data_vehicles
-            
+    def check_file_path(path:str):
+        if os.path.exists(path):
+            return True
+    
+    def _get_max_date_from_api(self, base_url, params, query = None) -> str:
+        extractor = api_extractor( base_url, params, query= None)
+        data = extractor.extract()
+        max_date = data.iloc[0, 0]
+        if isinstance(max_date, str):
+            max_date = pd.to_datetime(max_date).date()
+
+    # Return as formatted SQL-friendly string
+            return max_date.strftime("%Y-%m-%d")
+        return max_date
+    
+    def run_etl(self, base_dir: Path, engine):
+        for k, v in self.config['base_url'].items():
+            file_path = base_dir / self.config['file_name'][k]
+
+        # Extraction_Incrmental_Format
+            if not file_path.exists():
+                logger.info("Extracting First Time Load")
+                params = self.config['first_time_load']
+                print (params)
+            else:
+                logger.info("Extracting incremental data")
+                max_date = self._get_max_date_from_api(base_url=v, params=self.config['max_date_data'])
+                select_part = self.config['incremental_query']['query']['Select']
+                where_template = self.config['incremental_query']['query']['Where']
+                where_clause = where_template.replace("{max_date}", f"'{max_date}'")
+                params = {"query": f"SELECT {select_part} WHERE {where_clause}"}
+            extractor = api_extractor(base_url=v, params=params, query=None)
+            data_for_table = extractor.extract()
+            # data_for_table['ETL_Date_Time'] = datetime.now().strftime("%Y-%m-%D %H-%M-%S")
+            data_for_table.columns = [c.replace(":", "").replace(".", "_") for c in data_for_table.columns]
 
 
-    def extract_data_person(self):   
-         # authenticate
-        extract_path = Path(__file__).parent.parent/'person.csv'
-        auth = api_Authentication()   
-        header =  auth.headers()
-        if not extract_path.exists():
-            extract_object  = api_extractor(header,self.config['base_url']['person'],  self.config['first_time_load'],  params = 'None')
-            first_load = extract_object.extract_first_time_load()
-            df_person = pd.json_normalize(first_load)
-            df_person.to_csv("person.csv")
-            return df_person
+        # Clean data
+            invalid_values = {"": None, " ": None, "NULL": None, "NaN": None, "n/a": None, "N/A": None}
+            data_for_table = data_for_table.replace(invalid_values)
+            data_for_table = data_for_table.where(pd.notnull(data_for_table), None)    
 
-        else:
-               # max_date = df["crash_date"].max()
-            extract_object  = api_extractor(header, self.config['base_url']['person'],  self.config['max_date_data'],   params = 'None')
-            max_date_crash_json = extract_object.extract_first_time_load()
-            max_date_data = max_date_crash_json[0]['max_crash_date']
-            params_query = config_data["params_query"]
-            params_query["$where"] = params_query["$where"].format(max_date=max_date_data)
-            extract_object  = api_extractor(header, self.config['base_url']['person'], query = 'None' , params = params_query)
-            incremental_data = extract_object.extract_incremental_load()
-            incremental_data = pd.json_normalize(incremental_data)
-            incremental_data.to_csv("person.csv", mode= 'a')  
-            updated_data_person = pd.concat([incremental_data, df_person], ignore_index= True)
-            return updated_data_person
-        
+        # Save raw
+            data_for_table.to_csv(file_path, index=False)
+
+        # Load_Upsert
+            table = db_loader(k, self.config['tables'][k]['columns']).create_metadata()
+        #     # valid_cols = [c.name for c in table.columns]
+        #     # data_for_table = data_for_table[[c for c in data_for_table.columns if c in valid_cols]]
+            data_for_table_json = data_for_table.to_dict(orient="records")
+
+            logger.info("Upserting data")
+            stmt = insert(table).values(data_for_table_json)
+            upsert_stmt = stmt.on_conflict_do_update(
+            index_elements=[i['name'] for i in self.config['tables'][k]['columns'] if i.get('primary_key', False)],
+            set_={i['name']: stmt.excluded[i['name']] for i in self.config['tables'][k]['columns'] if not i.get('primary_key', False)}
+        )
+
+            with engine.begin() as conn:
+                conn.execute(upsert_stmt)
+            print(f"Table {k} inserted/updated successfully.")
 
 
-                  
 
-p = pipeline(config= config_data)
-p.extract_data_crashes()
-p.extract_data_person()
-p.extract_data_vehicles()
+if __name__ == "__main__":
+    engine = DB_auth().create_engine()
+    p = pipeline(config= config_data)
+    p.run_etl(Base_dir, engine=engine)
+
+

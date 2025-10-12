@@ -1,30 +1,41 @@
 
 import requests as re
+import pandas as pd
+from auth.API_auth import api_Authentication
+
+
 
 class api_extractor():
-        def __init__(self, header, base_url, query, params):
-              self.header = header
+        def __init__(self, base_url, params,  query,):
+              auth = api_Authentication()
+              self.header = auth.headers()
               self.base_url = base_url
               self.query = query
               self.params= params
-              print ("check")
+            
              
 
-        def extract_first_time_load(self):
+        def extract(self):
               session = re.Session()
-              print (self.header)
-              response = session.post(url = self.base_url, headers = self.header, json = self.query, params= self.params )
-              print (response.status_code)
-              data = response.json()
+              response = session.get(url = self.base_url, headers = self.header, params= self.params )
+              json_data = response.json()
+              data = pd.json_normalize(json_data)
               return data
+             
+              
+           
+             
+             
         
-        def extract_incremental_load(self):
-              session = re.Session()
-              print (self.header)
-              response = session.get(url = self.base_url, headers = self.header, json = self.query, params= self.params )
-              print (response.status_code)
-              data = response.json()
-              return data
+        
+        # def extract_incremental_load(self):
+        #       session = re.Session()
+        #       response = session.get(url = self.base_url, headers = self.header, json = self.query, params= self.params )
+        #       incremental_load = response.json()
+        #       df_incremental_load = pd.json_normalize(incremental_load)
+        #       return df_incremental_load
+        
+
         
 
 

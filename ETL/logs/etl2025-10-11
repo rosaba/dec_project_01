@@ -1,0 +1,28 @@
+2025-10-11 13:30:44.854 | INFO     | auth.DB_auth:create_engine:30 - Connecting to localhost:5432/Newyork_Open_DB as postgres
+2025-10-11 13:30:44.854 | INFO     | auth.DB_auth:create_engine:30 - Connecting to localhost:5432/Newyork_Open_DB as postgres
+2025-10-11 13:30:45.032 | INFO     | auth.DB_auth:create_engine:35 - Database connection established successfully!
+2025-10-11 13:30:45.032 | INFO     | auth.DB_auth:create_engine:35 - Database connection established successfully!
+2025-10-11 13:30:45.033 | INFO     | __main__:run_etl:53 - Extracting incremental data
+2025-10-11 13:30:45.033 | INFO     | __main__:run_etl:53 - Extracting incremental data
+2025-10-11 13:30:47.877 | INFO     | auth.DB_auth:create_engine:30 - Connecting to localhost:5432/Newyork_Open_DB as postgres
+2025-10-11 13:30:47.877 | INFO     | auth.DB_auth:create_engine:30 - Connecting to localhost:5432/Newyork_Open_DB as postgres
+2025-10-11 13:30:47.901 | INFO     | auth.DB_auth:create_engine:35 - Database connection established successfully!
+2025-10-11 13:30:47.901 | INFO     | auth.DB_auth:create_engine:35 - Database connection established successfully!
+2025-10-11 13:30:47.924 | INFO     | __main__:run_etl:86 - Upserting data
+2025-10-11 13:30:47.924 | INFO     | __main__:run_etl:86 - Upserting data
+2025-10-11 13:30:47.944 | INFO     | __main__:run_etl:53 - Extracting incremental data
+2025-10-11 13:30:47.944 | INFO     | __main__:run_etl:53 - Extracting incremental data
+2025-10-11 13:30:50.649 | INFO     | auth.DB_auth:create_engine:30 - Connecting to localhost:5432/Newyork_Open_DB as postgres
+2025-10-11 13:30:50.649 | INFO     | auth.DB_auth:create_engine:30 - Connecting to localhost:5432/Newyork_Open_DB as postgres
+2025-10-11 13:30:50.675 | INFO     | auth.DB_auth:create_engine:35 - Database connection established successfully!
+2025-10-11 13:30:50.675 | INFO     | auth.DB_auth:create_engine:35 - Database connection established successfully!
+2025-10-11 13:30:50.679 | INFO     | __main__:run_etl:86 - Upserting data
+2025-10-11 13:30:50.679 | INFO     | __main__:run_etl:86 - Upserting data
+2025-10-11 13:30:50.683 | INFO     | __main__:run_etl:53 - Extracting incremental data
+2025-10-11 13:30:50.683 | INFO     | __main__:run_etl:53 - Extracting incremental data
+2025-10-11 13:30:53.124 | INFO     | auth.DB_auth:create_engine:30 - Connecting to localhost:5432/Newyork_Open_DB as postgres
+2025-10-11 13:30:53.124 | INFO     | auth.DB_auth:create_engine:30 - Connecting to localhost:5432/Newyork_Open_DB as postgres
+2025-10-11 13:30:53.153 | INFO     | auth.DB_auth:create_engine:35 - Database connection established successfully!
+2025-10-11 13:30:53.153 | INFO     | auth.DB_auth:create_engine:35 - Database connection established successfully!
+2025-10-11 13:30:53.158 | INFO     | __main__:run_etl:86 - Upserting data
+2025-10-11 13:30:53.158 | INFO     | __main__:run_etl:86 - Upserting data
