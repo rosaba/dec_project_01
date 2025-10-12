@@ -59,7 +59,6 @@ class pipeline():
                 params = {"query": f"SELECT {select_part} WHERE {where_clause}"}
             extractor = api_extractor(base_url=v, params=params, query=None)
             data_for_table = extractor.extract()
-            # data_for_table['ETL_Date_Time'] = datetime.now().strftime("%Y-%m-%D %H-%M-%S")
             data_for_table.columns = [c.replace(":", "").replace(".", "_") for c in data_for_table.columns]
 
 
@@ -73,8 +72,6 @@ class pipeline():
 
         # Load_Upsert
             table = db_loader(k, self.config['tables'][k]['columns']).create_metadata()
-        #     # valid_cols = [c.name for c in table.columns]
-        #     # data_for_table = data_for_table[[c for c in data_for_table.columns if c in valid_cols]]
             data_for_table_json = data_for_table.to_dict(orient="records")
 
             logger.info("Upserting data")
