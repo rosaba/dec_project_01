@@ -31,6 +31,7 @@
 
 ### Architecture Diagram
 
+![Uploading Architecture Diagram.png…]()
 
-<img width="600" height="620" alt="Screenshot 2025-10-13 at 22 10 34" src="https://github.com/user-attachments/assets/38866359-e2cb-44a1-b9bd-3f97292c4e0c" />
+
 
