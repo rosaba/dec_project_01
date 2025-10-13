@@ -5,6 +5,7 @@ from loguru import logger
 from config.config import APIConfig, DatabaseConfig
 from extract.extractor import APIExtractor
 from load.loader import DatabaseLoader
+from sqlalchemy.exc import IntegrityError
 
 
 class ETLPipeline:
@@ -32,13 +33,17 @@ class ETLPipeline:
 
         logger.info(f"Uploading new data for {source_name}")
         current_date = latest_api_date
-        yaml_metadata = f'./{source_name}_metadata.yaml'
+        yaml_metadata = f'./yaml_files/{source_name}_metadata.yaml'
         
         while current_date > latest_db_date:
             df = self.extractor.extract_data(url, source_name, current_date)
             
             if df is not None and not df.empty:
-                self.loader.create_table_from_yaml(yaml_metadata, df)
+                try:
+                    self.loader.create_table_from_yaml(yaml_metadata, df)
+                except Exception as e:
+                    logger.error("Error loading data to table.")
+                    continue
             
             current_date -= timedelta(days=1)
     
@@ -83,7 +88,11 @@ class ETLPipeline:
                 self._update_recent_data(source_name, url, latest_db_date)
         
         # Process new data
-        self._process_new_data(source_name, url, latest_api_date, latest_db_date)
+        try:
+            self._process_new_data(source_name, url, latest_api_date, latest_db_date)
+        except Exception as e:
+            return 
+        
         
         logger.info(f"Completed processing {source_name}")
     
@@ -95,24 +104,22 @@ class ETLPipeline:
             logger.error("Could not connect to database. Exiting.")
             return False
         
-        try:
-            for source_name, url in self.data_sources.items():
+        for source_name, url in self.data_sources.items():
+            try:
                 self._process_data_source(source_name, url)
+
+            except Exception as e:
+                logger.error(f"Failed to process {source_name}: {e}")
+                continue
             
-            logger.info("ETL pipeline completed successfully")
-            return True
-            
-        except Exception as e:
-            logger.error(f"Pipeline failed: {e}")
-            return False
-            
-        finally:
-            self.loader.close()
+        logger.info("ETL pipeline completed")
+        self.loader.close()
+        return True
 
 
 if __name__ == "__main__":
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    yaml_path = os.path.join(base_dir, 'mvc.yaml')
+    yaml_path = os.path.join(base_dir, 'yaml_files', 'mvc.yaml')
     
     pipeline = ETLPipeline(base_dir, yaml_path)
     pipeline.run()

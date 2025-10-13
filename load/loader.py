@@ -14,11 +14,11 @@ def get_sqlalchemy_type(type_str):
     type_mapping = {
         'Date': Date,
         'Datetime': DateTime,
-        'String': String(250),
+        'String': String(300),
         'Float': Float,
         'Integer': Integer
     }
-    return type_mapping.get(type_str, String(250))
+    return type_mapping.get(type_str, String(300))
 
 def load_table_from_yaml(yaml_file, metadata):
 
@@ -79,6 +79,10 @@ class DatabaseLoader:
             logger.error(f"Database connection failed: {e}")
             return False
     
+    def roll_back(self):
+        with self.engine.connect() as conn:
+            conn.rollback()
+        
     def table_exists(self, table_name):
         
         return table_name in self.inspector.get_table_names()
