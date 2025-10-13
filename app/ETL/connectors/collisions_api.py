@@ -86,3 +86,51 @@ class CollisionsApiClient:
                 print(f"Error collecting data for dataset with id '{dataset_id}': {str(e)}")
 
         return collected_data
+    
+
+    def get_collisions_of_one_day(
+            self, 
+            dataset_id: str, 
+            day_date_iso: str, 
+            crash_time: str, 
+            limit: int = 1000, 
+            max_rows: int = 100000
+            ) -> list:
+        """
+        Fetches all collision records of a a specified crash date and time.
+        Retrieves data in paginated batches using the given `limit`, up to a maximum of `max_rows`.
+        For testing purposes.
+
+        Args:
+            dataset_id (str): The ID of the dataset to query.
+            day_date_iso (str): The crash_date (in ISO format) to start fetching records from.
+            limit (int, optional): Number of records per page (default is 1000).
+            max_rows (int, optional): Maximum number of records to fetch in total (default is 100000).
+
+        Returns:
+            list: A list of dictionaries representing collision records.
+
+        Raises:
+            Exception: If the API call fails during any page request.
+        """
+
+        collected_data = []
+
+        for offset in range(0, max_rows, limit):
+            params = {
+                "$where": f"crash_date = '{day_date_iso}' AND crash_time = '{crash_time}'",
+                "$order": "crash_date DESC, crash_time DESC",
+                "$limit": str(limit),
+                "$offset": offset
+            }
+
+            try:
+                data = self.get_collisions_datasets(dataset_id=dataset_id, params=params)
+                if not data:
+                    break
+                collected_data.extend(data)
+                logger.info(f"Collected {len(data)} rows of data with id {dataset_id} of {day_date_iso}: now at {len(collected_data)} in total")
+            except Exception as e:
+                print(f"Error collecting data for dataset with id '{dataset_id}': {str(e)}")
+
+        return collected_data

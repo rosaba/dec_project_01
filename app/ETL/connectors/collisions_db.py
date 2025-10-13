@@ -9,7 +9,6 @@ from sqlalchemy import (
     insert,
     select
 )
-from sqlalchemy.dialects import postgresql
 from sqlalchemy.exc import SQLAlchemyError
 
 class CollisionsDbClient:
