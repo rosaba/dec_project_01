@@ -24,7 +24,7 @@ today = datetime.now().strftime("%Y-%m-%dT00:00:00.000")
 
 # PostgreSQL connection details
 DB_USER = 'postgres'
-DB_PASSWORD = 'Well9cp2!'
+DB_PASSWORD = ''
 DB_HOST = 'localhost'
 DB_PORT = '5432'
 DB_NAME = 'nyc_collisions'
@@ -111,3 +111,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
