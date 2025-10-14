@@ -49,5 +49,5 @@ if check_connection(source_url):
         
         
 else:
-    print("Please check connection")
+    print(check_connection(source_url))
         

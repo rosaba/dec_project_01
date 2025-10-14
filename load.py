@@ -13,7 +13,7 @@ import pandas as pd
 def create_db_url(username, password, host, port, database) ->  URL:
 
     source_connection_url = URL.create(
-        drivername = 'postgresql+pg800',
+        drivername = 'postgresql+psycopg2',
         username = username,
         password = password,
         host = host,
@@ -30,8 +30,8 @@ def check_connection(source_connection_url:URL) -> bool:
         with source_engine.connect() as connection:
             connection.execute(text("SELECT 1"))
         return True
-    except:
-        return False
+    except Exception as e:
+        return f'{e}'
 
 def get_type(type_str):
 
