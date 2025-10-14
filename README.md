@@ -17,7 +17,7 @@
 
 5- We also did one transformation to answer questions how many are the crashes happening each week and uploading it back to postgres DB.
 
-6- We dockerize it and used Amazon services for deployiong it on cloud.
+6- We then dockerized it and used Amazon services for deployiong it on cloud.
 
 
 ### BEFORE running the code
