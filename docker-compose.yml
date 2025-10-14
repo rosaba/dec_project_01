@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  my_postgres:
+    image: postgres:16
+    container_name: collisions_postgres
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DESTINATION_DB_USERNAME}
+      POSTGRES_PASSWORD: ${DESTINATION_DB_PASSWORD}
+      POSTGRES_DB: ${DESTINATION_DATABASE_NAME}
+    ports:
+      - 5433:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  etl_project:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: etl-proj1-image
+    depends_on:
+      my_postgres:
+        condition: service_healthy
+    env_file:
+      - .env
