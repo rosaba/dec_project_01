@@ -3,7 +3,6 @@ from sqlalchemy import create_engine, inspect, text, Table, Column, MetaData, In
 from sqlalchemy.dialects.postgresql import insert
 from dotenv import load_dotenv
 import os
-import psycopg2
 import yaml
 from loguru import logger
 from datetime import timedelta
@@ -14,7 +13,7 @@ import pandas as pd
 def create_db_url(username, password, host, port, database) ->  URL:
 
     source_connection_url = URL.create(
-        drivername = 'postgresql+psycopg2',
+        drivername = 'postgresql+pg800',
         username = username,
         password = password,
         host = host,
