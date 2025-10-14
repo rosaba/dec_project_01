@@ -15,7 +15,7 @@
 
 4- We then post the data in postgress 
 
-5- We also did one transformation to answer questions how many are the crashes happening each week.
+5- We also did one transformation to answer questions how many are the crashes happening each week and uploading it back to postgres DB.
 
 6- We dockerize it and used Amazon services for deployiong it on cloud.
 
