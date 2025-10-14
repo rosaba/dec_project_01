@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from datetime import datetime
 from loguru import logger
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def request_config(url,param):
     load_dotenv()

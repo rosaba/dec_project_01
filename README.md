@@ -16,10 +16,10 @@
 - Customize .env file from template.env
 
 ### RUN LOCALLY
-- in .env set SERVER_NAME=localhost
+- in .env set DESTINATION_SERVER_NAME=localhost
 - run pipeline:
 ```cd app```
-```python -m ETL.pipeline```
+```python mvc_pipeline.py```
 
 - run unit tests from directory app:
 ```PYTHONPATH=. pytest ETL_tests```
