@@ -21,8 +21,9 @@
 
 ## Improvements
 
-1- In case pipeline fails, how to handle missing data for the filaure days.
+1- In case pipeline fails, how to handle missing data for the filaure days
 2- Add etl update and time
+
 
 
 
