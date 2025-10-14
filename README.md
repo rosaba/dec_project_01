@@ -67,6 +67,9 @@
 ## Creating destination DB and security group for DB
 
 <img width="1302" height="678" alt="Screenshot 2025-10-13 at 21 50 05" src="https://github.com/user-attachments/assets/4eeafbdb-3c90-4bb1-8921-63639f640cd1" />
+<img width="1254" height="755" alt="Screenshot 2025-10-14 at 16 08 26" src="https://github.com/user-attachments/assets/e69530cf-ff82-492f-a3f3-417312292757" />
+<img width="1301" height="755" alt="Screenshot 2025-10-14 at 16 08 34" src="https://github.com/user-attachments/assets/dc1a6b4a-74b8-4df3-817d-3e5162173075" />
+
 
 ## Log monitoring through cloud watch
 <img width="1302" height="810" alt="Screenshot 2025-10-13 at 21 50 45" src="https://github.com/user-attachments/assets/98e5fda2-d35a-43d1-8c2e-1765ff7cb038" />
