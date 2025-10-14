@@ -23,3 +23,4 @@ dependencies:
       - pg8000
       - pytest
       - sqlalchemy
+      - psycopg2-binary

@@ -10,6 +10,7 @@ from sqlalchemy import (
     select
 )
 from sqlalchemy.exc import SQLAlchemyError
+from datetime import datetime
 
 class CollisionsDbClient:
     """
@@ -123,3 +124,11 @@ class CollisionsDbClient:
             result = conn.execute(stmt)
             rows = result.fetchall()
             return [dict(row._mapping) for row in rows]
+        
+
+    def save_to_postgres(self, collisions_by_day) -> None:
+        TABLE_NAME = 'crash'
+        connection_string = f'postgresql://{self.username}:{self.password}@{self.host_name}:{self.port}/{self.database_name}'
+        engine = create_engine(connection_string)
+        collisions_by_day.to_sql(TABLE_NAME, engine, if_exists='replace', index=False)
+        print(f"Data saved to PostgreSQL table: {TABLE_NAME} at {datetime.now()}")

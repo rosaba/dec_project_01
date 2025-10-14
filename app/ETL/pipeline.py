@@ -6,6 +6,7 @@ from ETL.Extract.extract import load_dataset_ids, get_since_iso, fetch_collision
 from loguru import logger
 from ETL.connectors.collisions_db import CollisionsDbClient
 from ETL.Load.load import prep_and_load_table
+from ETL.Transform.transform import transform_data
 
 
 def main():
@@ -62,7 +63,12 @@ def main():
         prep_and_load_table(metadata_yaml_file_path=file_path_metadata, client=collisions_db_client, df=df)
 
 
-    # Transform
+    # Transform crashes data
+    file_path_csv = os.path.join(BASE_DIR, f"raw_data/crashes/crashes.csv")
+    df_crashes = pd.read_csv(file_path_csv)
+    df_collisions_by_day = transform_data(df=df_crashes)
+    collisions_db_client.save_to_postgres(df_collisions_by_day)
+    
     
 if __name__ == '__main__':
     main()
