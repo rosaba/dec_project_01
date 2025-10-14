@@ -1,5 +1,5 @@
-from extract import *
-from load import *
+from extract.extract import *
+from load.load import *
 from datetime import datetime, timedelta, date
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
