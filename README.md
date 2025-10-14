@@ -20,6 +20,8 @@
 6- We then dockerized it and used Amazon services for deployiong it on cloud.
 
 
+
+
 ### BEFORE running the code
 - Create conda environment from yml:
 ```conda env create -f environment.yml```
