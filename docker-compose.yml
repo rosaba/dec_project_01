@@ -6,6 +6,10 @@ services:
     container_name: collisions_postgres
     env_file:
       - .env
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
     ports:
       - 5433:5432
     healthcheck:
