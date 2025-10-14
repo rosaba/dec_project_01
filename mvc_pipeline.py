@@ -24,7 +24,7 @@ if check_connection(source_url):
         latest_api_date = get_date(mvc_data[key],'SELECT * ORDER BY crash_date DESC LIMIT 1')
 
         if f'{key}' not in inspector.get_table_names():
-            latest_db_date = latest_api_date - timedelta(years=2) # <- first time upload, need to refactor to data from previous 90 days dynamically
+            latest_db_date = latest_api_date - timedelta(days=730) # <- first time upload, need to refactor to data from previous 90 days dynamically
         else:
             date_query = f'SELECT MAX(crash_date) from {key}'
             logger.info("Updating data for the past 30 days")
