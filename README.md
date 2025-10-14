@@ -9,7 +9,7 @@
 
 1- Data Source in NYC Collison Open API 
 
-2- We extracted three data from API, collison data, vehciles data, person data
+2- We extracted three datasets from API which are - collison data, vehciles data, person data
 
 3- We faced a challenge that we could not find the updated date, as result of which we to use max data of crash date from each file ( for incremental load) to get the most updated data for upsert and also the data can be extracted using sql. Since there was no updated date, our project is not tracking the historical changes.
 
