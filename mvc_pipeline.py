@@ -1,3 +1,16 @@
+"""
+NYC Motor Vehicle Collisions ETL Pipeline.
+
+This script orchestrates the complete ETL (Extract, Transform, Load) process:
+1. Connects to PostgreSQL database
+2. Fetches latest data from NYC Open Data API
+3. Updates existing records for the past 30 days
+4. Loads new data into database
+
+The pipeline processes data in daily increments and handles both initial
+data loads and incremental updates.
+"""
+
 from extract.extract import *
 from load.load import *
 from datetime import datetime, timedelta, date
