@@ -15,7 +15,7 @@
 
 4- We then post the data in postgress 
 
-5- We also did one transformation to answer questions how many are the crashes happening each week and uploading it back to postgres DB.
+5- We also cleaning and transforming the data  uploading it back to postgres DB so the data analyst can answer questions like what are the weekly for the crashes, which borough has the highest number of crashes. 
 
 6- We then dockerized it and used Amazon services for deployiong it on cloud.
 
