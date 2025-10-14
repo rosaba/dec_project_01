@@ -23,6 +23,7 @@
 
 1- In case pipeline fails, how to handle missing data for the filaure days
 2- Add etl update and time
+3- Right now instead of using data from postgres sql we are using extracted data in pandas dataframe. 
 
 
 
