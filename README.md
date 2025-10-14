@@ -8,11 +8,17 @@
 ## Approach and challenges
 
 1- Data Source in NYC Collison Open API 
+
 2- We extracted three data from API, collison data, vehciles data, person data
-3- We faced a challenge that we could not find the updated date, as result of which we to use max data of crash date from each file to get the most updated data for upsert and also the data can be extracted using sql.
+
+3- We faced a challenge that we could not find the updated date, as result of which we to use max data of crash date from each file to get the most updated data for 
+upsert and also the data can be extracted using sql.
+
 4- We then post the data in postgress 
+
 5- We also did one transformation to answer questions how many are the crashes happening each week.
-5- We dockerize it and used Amazon services for deployiong it on cloud.
+
+6- We dockerize it and used Amazon services for deployiong it on cloud.
 
 
 ### BEFORE running the code
