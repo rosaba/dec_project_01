@@ -10,4 +10,4 @@ COPY /app .
 
 ENV PYTHONPATH=/app
 
-CMD ["python", "-m", "ETL.pipeline"]
+CMD ["python", "-m", "ELT.pipeline"]

@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 import pytest
 from datetime import datetime
-from ETL.connectors.collisions_api import CollisionsApiClient#, get_collisions_of_one_day
+from ELT.connectors.collisions_api import CollisionsApiClient
 import os
 
 @pytest.fixture

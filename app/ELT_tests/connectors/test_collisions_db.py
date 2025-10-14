@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 import pytest
 import os
-from ETL.connectors.collisions_db import CollisionsDbClient
+from ELT.connectors.collisions_db import CollisionsDbClient
 from sqlalchemy import Table, Column, Integer, String, MetaData
 
 @pytest.fixture

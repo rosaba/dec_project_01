@@ -3,7 +3,7 @@ import yaml
 import json
 import pandas as pd
 from loguru import logger
-from ETL.connectors.collisions_api import CollisionsApiClient
+from ELT.connectors.collisions_api import CollisionsApiClient
 
 def load_dataset_ids(base_dir: str) -> list:
     """Load dataset ids from yaml file"""

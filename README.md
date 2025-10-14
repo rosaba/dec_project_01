@@ -19,10 +19,10 @@
 - in .env set SERVER_NAME=localhost
 - run pipeline:
 ```cd app```
-```python -m ETL.pipeline```
+```python -m ELT.pipeline```
 
 - run unit tests from directory app:
-```PYTHONPATH=. pytest ETL_tests```
+```PYTHONPATH=. pytest ELT_tests```
 
 ### RUN WITH DOCKER:
 - in .env set SERVER_NAME=collisions_postgres
