@@ -91,7 +91,7 @@ class ETLPipeline:
         try:
             self._process_new_data(source_name, url, latest_api_date, latest_db_date)
         except Exception as e:
-            return 
+            return None
         
         
         logger.info(f"Completed processing {source_name}")

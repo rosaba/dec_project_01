@@ -16,6 +16,7 @@ class APIConfig:
 class DatabaseConfig:
 
     def __init__(self):
+        load_dotenv()
         self.username = os.environ.get('DESTINATION_DB_USERNAME')
         self.password = os.environ.get('DESTINATION_DB_PASSWORD')
         self.host = os.environ.get('DESTINATION_SERVER_NAME')
